@@ -144,6 +144,7 @@ function Slider() {
       const imgFront = data[currentSlide].imgFront;
 
       if (canvasRef.current && ctx && imgBack && imgFront) {
+        console.log(fhAnimationShow);
         canvasRef.current.width = imgBack.width;
         canvasRef.current.height = imgBack.height;
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
