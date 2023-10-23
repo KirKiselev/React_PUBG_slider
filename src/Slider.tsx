@@ -17,7 +17,6 @@ import img5back from "./assets/img/img_5_back.png";
 
 import { FrameHandler } from "../FrameHandler.ts";
 import "../Easings.ts";
-import { easeInQuad } from "../Easings.ts";
 
 const imageURI = [
   { imgBack: img1back, imgFront: img1front },
@@ -65,6 +64,9 @@ const data: mockData[] = [
   },
 ];
 
+let mouseMoveStartPosition = -1;
+let offset = -1;
+
 function Slider() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   //
@@ -85,6 +87,14 @@ function Slider() {
       setCurrentSlide(parseInt(target.textContent) - 1);
       setCounter(parseInt(target.textContent) - 1);
     }
+  }
+
+  function nextSlide() {
+    setCounter(counter + 1);
+  }
+
+  function previousSlide() {
+    setCounter(counter - 1);
   }
 
   function getPointerPosition(e: MouseEvent) {
@@ -138,6 +148,9 @@ function Slider() {
 
     const fhAnimationShow = new FrameHandler(animationShow);
     const fhAnimationHide = new FrameHandler(animationHide);
+    const post = document.getElementById("newsBlock_post");
+    const postHeader = document.getElementById("newsBlock_post_textHeader");
+    const postText = document.getElementById("newsBlock_post_text");
 
     function animationShow(delta: number) {
       const imgBack = data[currentSlide].imgBack;
@@ -186,10 +199,10 @@ function Slider() {
         ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         ctx.globalCompositeOperation = "source-in";
 
-        ctx.drawImage(imgBack, 0, 0);
+        ctx.drawImage(imgBack, offset / 60, 0);
         ctx.restore();
         ctx.globalCompositeOperation = "source-over";
-        ctx.drawImage(imgFront, 0, 0);
+        ctx.drawImage(imgFront, offset / 20, 0);
         imgOpacity -= 0.01 * delta;
         if (imgOpacity <= 0) {
           fhAnimationHide.stop();
@@ -204,12 +217,25 @@ function Slider() {
 
       timer2.current = setTimeout(() => {
         window.removeEventListener("mousemove", getPointerPosition);
+
+        if (post) {
+          post.className = "newsBlock_post-hidden";
+        }
+
         fhAnimationHide.start();
       }, 4000);
+
       timer3.current = setTimeout(() => {
+        mouseMoveStartPosition = -1;
+        offset = -1;
         setCounter(counter + 1);
       }, 5500);
 
+      if (post && postText && postHeader) {
+        post.className = "newsBlock_post-shown";
+        postHeader.textContent = data[currentSlide].title;
+        postText.textContent = data[currentSlide].text;
+      }
       fhAnimationShow.start();
     }
 
@@ -226,6 +252,12 @@ function Slider() {
     const imgFront = data[currentSlide].imgFront;
 
     function animationParallax() {
+      if (mouseMoveStartPosition === -1) {
+        mouseMoveStartPosition = currentPointerX;
+      }
+
+      offset = currentPointerX - mouseMoveStartPosition;
+
       if (canvasRef.current && ctx && imgBack && imgFront) {
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         ctx.save();
@@ -237,10 +269,10 @@ function Slider() {
         ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         ctx.globalCompositeOperation = "source-in";
 
-        ctx.drawImage(imgBack, 0, 0);
+        ctx.drawImage(imgBack, offset / 60, 0);
         ctx.restore();
         ctx.globalCompositeOperation = "source-over";
-        ctx.drawImage(imgFront, currentPointerX / 10, 0);
+        ctx.drawImage(imgFront, offset / 20, 0);
       }
     }
 
@@ -256,13 +288,19 @@ function Slider() {
     <>
       <div className="slider_wrapper">
         <div className="slider_contentWrapper">
-          <button className="slider_changeSlideButton" id="slider_changeSlideButtonPrev">
+          <button className="slider_changeSlideButton" id="slider_changeSlideButtonPrev" onClick={previousSlide}>
             Prev
           </button>
-          <button className="slider_changeSlideButton" id="slider_changeSlideButtonNext">
+          <button className="slider_changeSlideButton" id="slider_changeSlideButtonNext" onClick={nextSlide}>
             Next
           </button>
           <canvas id="slider_canvas" ref={canvasRef}></canvas>
+          <div id="newsBlock_postholder">
+            <div className="newsBlock_post-hidden" id="newsBlock_post">
+              <h1 id="newsBlock_post_textHeader"></h1>
+              <h2 id="newsBlock_post_text"></h2>
+            </div>
+          </div>
         </div>
         <div className="slider_navpanel">
           <button className="slider_navButton" onClick={changeSlide}>

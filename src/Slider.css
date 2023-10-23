@@ -29,7 +29,7 @@
   width: 50px;
   height: 50px;
   cursor: pointer;
-  z-index: 1;
+  z-index: 2;
 }
 
 #slider_changeSlideButtonPrev {
@@ -64,4 +64,89 @@
   color: orange;
   margin: 5px;
   cursor: pointer;
+}
+
+#newsBlock_postholder {
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 50px;
+  border: 1px solid green;
+  width: 350px;
+  height: 100%;
+  z-index: 1;
+}
+
+.newsBlock_post-hidden {
+  width: 100%;
+  display: block;
+  position: absolute;
+  animation: vanishing, slideout;
+  animation-duration: 1s, 1s;
+  animation-timing-function: ease-in, linear;
+  opacity: 0%;
+  margin-left: -50px;
+}
+
+.newsBlock_post-shown {
+  width: 100%;
+  display: block;
+  position: absolute;
+  color: green;
+  animation: showing, slidein;
+  animation-duration: 1s, 1s;
+  animation-timing-function: ease-in, linear;
+  opacity: 80%;
+  margin-left: 0px;
+}
+
+#newsBlock_post {
+  color: antiquewhite;
+}
+
+#newsBlock_post_textHeader {
+}
+
+#newsBlock_post_text {
+  text-align: justify;
+}
+
+@keyframes showing {
+  from {
+    opacity: 0%;
+  }
+
+  to {
+    opacity: 80%;
+  }
+}
+
+@keyframes slidein {
+  from {
+    margin-left: -50px;
+  }
+
+  to {
+    margin-left: 0px;
+  }
+}
+
+@keyframes vanishing {
+  from {
+    opacity: 80%;
+  }
+
+  to {
+    opacity: 0%;
+  }
+}
+
+@keyframes slideout {
+  from {
+    margin-left: 0px;
+  }
+
+  to {
+    margin-left: -50px;
+  }
 }
